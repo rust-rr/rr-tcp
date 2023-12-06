@@ -1,4 +1,7 @@
-use std::{collections::HashMap, fmt::Write, io::Result};
+use std::{
+    collections::HashMap,
+    io::{Result, Write},
+};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Response<'a> {
@@ -25,9 +28,9 @@ impl<'a> From<Response<'a>> for String {
     fn from(res: Response) -> Self {
         format!(
             "{} {} {}\r\n{}Content Length: {}\r\n\r\n{}",
-            res.version,
-            res.status_code,
-            res.status_text,
+            res.version(),
+            res.status_code(),
+            res.status_text(),
             res.headers(),
             res.body().len(),
             res.body(),
@@ -36,7 +39,7 @@ impl<'a> From<Response<'a>> for String {
 }
 
 impl<'a> Response<'a> {
-    fn new(
+    pub fn new(
         status_code: &'a str,
         headers: Option<HashMap<&'a str, &'a str>>,
         body: Option<String>,
@@ -69,7 +72,7 @@ impl<'a> Response<'a> {
         response
     }
 
-    fn send_response(&self, stream: &mut impl Write) -> Result<()> {
+    pub fn send_response(&self, stream: &mut impl Write) -> Result<()> {
         let res = self.clone();
 
         let res_string = String::from(res);
@@ -151,6 +154,4 @@ mod tests {
             "HTTP/1.1 200 OK\r\nContent-Type:text/html\r\nContent Length: 4\r\n\r\nxxxx"
         );
     }
-
-    // TODO: send_response
 }
